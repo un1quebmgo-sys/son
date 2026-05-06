@@ -7,4 +7,4 @@ fi
 
 git remote remove origin 2>/dev/null || true
 git remote add origin "https://un1quebmgo-sys:${GITHUB_PERSONAL_ACCESS_TOKEN}@github.com/un1quebmgo-sys/son.git"
-git push -u origin main && echo "Done! Pushed to GitHub."
+git push -u origin main --force && echo "Done! Pushed to GitHub."
