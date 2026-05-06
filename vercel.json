@@ -1,0 +1,4 @@
+{
+  "outputDirectory": "artifacts/api-server/public",
+  "buildCommand": "echo 'Static site — no build required'"
+}
