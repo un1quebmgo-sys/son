@@ -1,0 +1,14 @@
+{
+  "name": "son-meme-exchange",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static son meme exchange site with Supabase-backed app state.",
+  "scripts": {
+    "start": "python -m http.server 4173 --bind 127.0.0.1",
+    "check": "node --check script.js"
+  },
+  "dependencies": {
+    "@supabase/ssr": "^0.10.2",
+    "@supabase/supabase-js": "^2.105.3"
+  }
+}

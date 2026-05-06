@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1125" role="img" aria-labelledby="title desc">
+  <title id="title">Son acquired the group chat</title>
+  <desc id="desc">Clean sample meme poster with bold text and geometric avatar.</desc>
+  <rect width="900" height="1125" fill="#07121e"/>
+  <path d="M0 168h900M0 336h900M0 504h900M0 672h900M0 840h900M0 1008h900M150 0v1125M300 0v1125M450 0v1125M600 0v1125M750 0v1125" stroke="#163452" stroke-width="4"/>
+  <rect x="82" y="78" width="736" height="220" rx="16" fill="#cbff49"/>
+  <text x="450" y="176" text-anchor="middle" font-family="Poppins, Arial, sans-serif" font-size="78" font-weight="900" fill="#07121e">SON HAS</text>
+  <text x="450" y="258" text-anchor="middle" font-family="Poppins, Arial, sans-serif" font-size="78" font-weight="900" fill="#07121e">ADMIN</text>
+  <circle cx="450" cy="554" r="188" fill="#ffffff"/>
+  <circle cx="382" cy="514" r="24" fill="#07121e"/>
+  <circle cx="518" cy="514" r="24" fill="#07121e"/>
+  <path d="M342 616c78 72 143 72 216 0" fill="none" stroke="#07121e" stroke-width="24" stroke-linecap="round"/>
+  <rect x="187" y="820" width="526" height="144" rx="14" fill="#ff4da6"/>
+  <text x="450" y="884" text-anchor="middle" font-family="Roboto Mono, monospace" font-size="38" font-weight="700" fill="#ffffff">WHO APPROVED</text>
+  <text x="450" y="932" text-anchor="middle" font-family="Roboto Mono, monospace" font-size="38" font-weight="700" fill="#ffffff">THIS?</text>
+</svg>

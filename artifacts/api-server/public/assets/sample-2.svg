@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1125" role="img" aria-labelledby="title desc">
+  <title id="title">Homework zip final final</title>
+  <desc id="desc">Clean sample meme poster showing a file window and bold caption.</desc>
+  <rect width="900" height="1125" fill="#f4f8f8"/>
+  <rect x="70" y="92" width="760" height="602" rx="22" fill="#ffffff" stroke="#0a2138" stroke-width="8"/>
+  <rect x="70" y="92" width="760" height="96" rx="22" fill="#0a2138"/>
+  <circle cx="128" cy="140" r="16" fill="#ff4da6"/>
+  <circle cx="178" cy="140" r="16" fill="#ffd166"/>
+  <circle cx="228" cy="140" r="16" fill="#cbff49"/>
+  <rect x="148" y="270" width="604" height="92" rx="10" fill="#f4f8f8" stroke="#dce6e7" stroke-width="5"/>
+  <rect x="148" y="400" width="604" height="92" rx="10" fill="#f4f8f8" stroke="#dce6e7" stroke-width="5"/>
+  <rect x="148" y="530" width="604" height="92" rx="10" fill="#cbff49" stroke="#0a2138" stroke-width="5"/>
+  <text x="190" y="330" font-family="Roboto Mono, monospace" font-size="34" font-weight="700" fill="#0a2138">homework.zip</text>
+  <text x="190" y="460" font-family="Roboto Mono, monospace" font-size="34" font-weight="700" fill="#0a2138">homework_final.zip</text>
+  <text x="190" y="590" font-family="Roboto Mono, monospace" font-size="34" font-weight="700" fill="#0a2138">final_FINAL.zip</text>
+  <text x="450" y="834" text-anchor="middle" font-family="Poppins, Arial, sans-serif" font-size="82" font-weight="900" fill="#0a2138">SON SENT</text>
+  <text x="450" y="926" text-anchor="middle" font-family="Poppins, Arial, sans-serif" font-size="82" font-weight="900" fill="#0a2138">THE ZIP</text>
+  <rect x="223" y="982" width="454" height="58" rx="8" fill="#ff4da6"/>
+  <text x="450" y="1022" text-anchor="middle" font-family="Roboto Mono, monospace" font-size="28" font-weight="700" fill="#ffffff">confidence: 100%</text>
+</svg>

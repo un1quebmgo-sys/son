@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">songlasses meme credited to nuggettr</title>
+  <desc id="desc">Stylized son meme image with sunglasses, crying emojis, and nuggettr credit.</desc>
+  <defs>
+    <filter id="soft"><feGaussianBlur stdDeviation="1.4"/></filter>
+  </defs>
+  <rect width="1200" height="900" fill="#34372f"/>
+  <path d="M0 0h1200v900H0z" fill="#22251f" opacity=".42"/>
+  <ellipse cx="692" cy="445" rx="330" ry="390" fill="#6b4935"/>
+  <ellipse cx="727" cy="394" rx="260" ry="305" fill="#a06d4f"/>
+  <ellipse cx="590" cy="402" rx="155" ry="244" fill="#8b5f45"/>
+  <path d="M474 317c52-44 248-39 331 9l-28 91c-82-45-224-44-330 4Z" fill="#120f0f"/>
+  <path d="M270 576c175-80 332-69 555 5 94 31 164 37 276 15v304H0V709c95-53 181-91 270-133Z" fill="#27313a"/>
+  <rect x="346" y="351" width="270" height="90" rx="26" fill="#0a0a0a" transform="rotate(3 481 396)"/>
+  <rect x="640" y="360" width="282" height="94" rx="26" fill="#090909" transform="rotate(5 781 407)"/>
+  <rect x="598" y="387" width="66" height="28" fill="#0a0a0a"/>
+  <text x="94" y="714" font-family="Arial Black, Impact, sans-serif" font-size="96" fill="#fff" stroke="#000" stroke-width="12" paint-order="stroke fill">songlasses</text>
+  <text x="664" y="732" font-family="Arial, sans-serif" font-size="92" fill="#ffd64f">😭😭😭😭</text>
+  <text x="696" y="842" font-family="Arial, sans-serif" font-size="48" fill="#fff">credit: nuggettr</text>
+</svg>

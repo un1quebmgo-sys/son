@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1125" role="img" aria-labelledby="title desc">
+  <title id="title">Son loading</title>
+  <desc id="desc">Clean sample meme poster with loading bar and large typography.</desc>
+  <rect width="900" height="1125" fill="#0a2138"/>
+  <circle cx="176" cy="166" r="80" fill="#cbff49"/>
+  <circle cx="724" cy="166" r="80" fill="#ff4da6"/>
+  <circle cx="176" cy="958" r="80" fill="#ffd166"/>
+  <circle cx="724" cy="958" r="80" fill="#ffffff"/>
+  <text x="450" y="314" text-anchor="middle" font-family="Poppins, Arial, sans-serif" font-size="86" font-weight="900" fill="#ffffff">SON.EXE</text>
+  <text x="450" y="400" text-anchor="middle" font-family="Poppins, Arial, sans-serif" font-size="86" font-weight="900" fill="#ffffff">IS LOADING</text>
+  <rect x="130" y="538" width="640" height="70" rx="12" fill="none" stroke="#ffffff" stroke-width="8"/>
+  <rect x="150" y="558" width="102" height="30" rx="6" fill="#cbff49"/>
+  <text x="450" y="696" text-anchor="middle" font-family="Roboto Mono, monospace" font-size="44" font-weight="700" fill="#aab6bd">2% complete</text>
+  <rect x="126" y="782" width="648" height="110" rx="16" fill="#ffffff"/>
+  <text x="450" y="852" text-anchor="middle" font-family="Roboto Mono, monospace" font-size="34" font-weight="700" fill="#0a2138">please wait dramatically</text>
+</svg>

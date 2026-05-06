@@ -1,0 +1,8 @@
+node_modules/
+.tools/
+.tmp-son-remote/
+screenshots/
+son-main/
+son-main.zip
+.env.local
+*.log
