@@ -966,7 +966,11 @@ if (forumForm) {
     event.preventDefault();
     const user = getCurrentUser();
     const userVotes = totalVotesForAuthor(user?.handle);
-    if (!user || userVotes < 10) {
+    const unlockedList = getForumUnlocked();
+    const bannedList = getBanned();
+    const userKey = profileKey(user?.handle || "");
+    const canPost = user && !bannedList.includes(userKey) && (isAdminUser() || unlockedList.includes(userKey) || userVotes >= 10);
+    if (!canPost) {
       renderForums();
       return;
     }
@@ -1240,38 +1244,34 @@ if (signinForm) {
     const email = document.querySelector("#signin-email")?.value?.trim() || "";
     const password = document.querySelector("#signin-password")?.value || "";
 
+    if (!email) {
+      if (statusEl) statusEl.textContent = "Please enter your email.";
+      return;
+    }
+
     if (statusEl) statusEl.textContent = "Signing in...";
 
     if (window.SonBackend?.isConfigured()) {
       const { data, error } = await window.SonBackend.signIn({ email, password });
-      if (error) {
-        if (statusEl) statusEl.textContent = error.message;
-        return;
+      if (!error) {
+        verifiedAuthEmail = data?.user?.email?.toLowerCase() || "";
+        await refreshVerifiedAuthUser();
       }
-      verifiedAuthEmail = data?.user?.email?.toLowerCase() || "";
-      await refreshVerifiedAuthUser();
     }
-
-    const user = {
-      handle: normalizeHandle(email.split("@")[0]),
-      email,
-      display: "",
-      passwordSet: true,
-      createdAt: Date.now()
-    };
 
     const existing = getCurrentUser();
-    if (existing?.email?.toLowerCase() === email.toLowerCase()) {
-      setCurrentUser({ ...existing, email });
-    } else {
-      setCurrentUser(user);
-    }
+    const user = existing?.email?.toLowerCase() === email.toLowerCase()
+      ? { ...existing }
+      : { handle: normalizeHandle(email.split("@")[0]), email, display: "", passwordSet: true, createdAt: Date.now() };
+
+    setCurrentUser({ ...user, email });
+    updateAdminVisibility();
 
     if (statusEl) statusEl.textContent = isAdminUser()
-      ? "Admin signed in. Redirecting to admin panel..."
+      ? "Admin signed in. Redirecting..."
       : "Signed in! Redirecting...";
     window.setTimeout(() => {
-      window.location.href = isAdminUser() ? routePath("admin/") : routePath("#submit");
+      window.location.href = isAdminUser() ? routePath("admin/") : routePath("");
     }, 500);
   });
 }
