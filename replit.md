@@ -27,17 +27,17 @@ A community meme board for "son" memes — submit, vote, browse, and discuss.
 - Static site is served by the same Express server as the API, from the `public/` folder
 - Express 5 requires `/*splat` syntax for catch-all routes (not `*`)
 - The site works fully offline with localStorage when Supabase isn't configured
-- Admin access is gated to `un1quebmgo@gmail.com` — verified via Supabase Auth when configured
-- GitHub push requires a personal access token or GitHub integration (not yet set up)
+- Admin access is gated to `un1quebmgo@gmail.com` — verified via Supabase Auth when configured, falls back to localStorage email
+- Form submit shows a toast notification instead of redirecting to admin
 
 ## Product
 
 - Home feed: submit memes, upvote, browse with filtering
 - Gallery: searchable/sortable archive of all approved uploads
-- Forums: threaded discussions with topic filters and hot/new/top sorting
+- Forums: threaded discussions with topic filters, hot/new/top sorting, unlock/ban system
 - Profiles: top uploaders ranked by votes
-- Admin queue: accept/reject pending submissions (admin-only)
-- Sign up: Supabase email/password auth with localStorage fallback
+- Admin queue (4 tabs): Review Queue, Live Feed management, Forum Control (unlock/ban users, delete threads), Stats dashboard
+- Sign up/Sign In: tabbed auth page with Supabase email/password + localStorage fallback
 
 ## User preferences
 
@@ -48,6 +48,7 @@ A community meme board for "son" memes — submit, vote, browse, and discuss.
 
 - Supabase anon key in `config.js` starts with `sb_publishable_` — verify it's correct in the Supabase dashboard if sync fails
 - The `/*splat` catch-all in Express 5 must come AFTER `express.static()` or it will intercept asset requests
+- `forumUnlockKey` and `bannedKey` are included in `backend.js` keys array for Supabase sync
 
 ## Pointers
 

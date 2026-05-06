@@ -4,7 +4,9 @@
     "son-meme-exchange-posts",
     "son-meme-exchange-pending",
     "son-meme-exchange-votes",
-    "son-meme-exchange-forums"
+    "son-meme-exchange-forums",
+    "son-meme-exchange-forum-unlock",
+    "son-meme-exchange-banned"
   ];
   const privateKeys = [
     "son-meme-exchange-current-user",

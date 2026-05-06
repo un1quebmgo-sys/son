@@ -1797,6 +1797,207 @@ textarea:focus {
   text-align: center;
 }
 
+.son-toast {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%) translateY(16px);
+  background: var(--inverse);
+  color: var(--paper);
+  padding: 14px 24px;
+  border-radius: 99px;
+  font-size: 15px;
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 999;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.son-toast.is-visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.admin-tabs,
+.auth-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 28px;
+  border-bottom: 2px solid var(--border);
+  padding-bottom: 0;
+}
+
+.admin-tab-btn,
+.auth-tab-btn {
+  background: none;
+  border: none;
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.admin-tab-btn:hover,
+.auth-tab-btn:hover {
+  color: var(--ink);
+}
+
+.admin-tab-btn.is-active,
+.auth-tab-btn.is-active {
+  color: var(--ink);
+  border-bottom-color: var(--lime);
+}
+
+.admin-panel-desc {
+  color: var(--ink-soft);
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.admin-sub-title {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 8px;
+}
+
+.admin-forum-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+}
+
+.admin-live-card {
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.admin-live-card img {
+  width: 80px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: var(--radius);
+  display: block;
+}
+
+.admin-live-card h3 {
+  font-size: 15px;
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+
+.admin-live-card p {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.admin-forum-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+
+.admin-forum-row > span:first-child {
+  flex: 1;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.admin-forum-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.admin-badge {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: 3px 8px;
+  border-radius: 99px;
+}
+
+.badge-normal {
+  background: var(--border);
+  color: var(--ink-soft);
+}
+
+.badge-unlocked {
+  background: rgba(203, 255, 73, 0.3);
+  color: #4a6b00;
+}
+
+.badge-banned {
+  background: rgba(255, 77, 166, 0.18);
+  color: #b8005a;
+}
+
+.admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 24px;
+  background: var(--paper-soft);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.stat-num {
+  font-family: Poppins, Inter, sans-serif;
+  font-size: 2.4rem;
+  font-weight: 800;
+  line-height: 1;
+  color: var(--ink);
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--ink-soft);
+  font-weight: 500;
+}
+
+.ghost-light-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 18px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 600;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.ghost-light-button:hover {
+  background: var(--paper-soft);
+  border-color: var(--ink-soft);
+}
+
 @media (max-width: 980px) {
   .site-header {
     grid-template-columns: 1fr auto;
@@ -1863,6 +2064,28 @@ textarea:focus {
 
   .admin-card {
     grid-template-columns: 96px minmax(0, 1fr);
+  }
+
+  .admin-forum-split {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .admin-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .admin-live-card {
+    grid-template-columns: 64px minmax(0, 1fr);
+  }
+
+  .admin-live-card img {
+    width: 64px;
+    height: 52px;
+  }
+
+  .admin-live-card .admin-actions {
+    grid-column: 1 / -1;
   }
 
   .admin-card img {

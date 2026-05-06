@@ -39,6 +39,8 @@ const currentUserKey = "son-meme-exchange-current-user";
 const seedVersionKey = "son-meme-exchange-seed-version";
 const seedVersion = "facebook-profiles-v4";
 const adminEmail = "un1quebmgo@gmail.com";
+const forumUnlockKey = "son-meme-exchange-forum-unlock";
+const bannedKey = "son-meme-exchange-banned";
 
 const form = document.querySelector("#meme-form");
 const signupForm = document.querySelector("#signup-form");
@@ -152,6 +154,22 @@ function saveVotes(votes) {
   localStorage.setItem(voteKey, JSON.stringify(votes));
 }
 
+function getForumUnlocked() {
+  return loadJson(forumUnlockKey, []);
+}
+
+function saveForumUnlocked(list) {
+  localStorage.setItem(forumUnlockKey, JSON.stringify(list));
+}
+
+function getBanned() {
+  return loadJson(bannedKey, []);
+}
+
+function saveBanned(list) {
+  localStorage.setItem(bannedKey, JSON.stringify(list));
+}
+
 function getCurrentUser() {
   return loadJson(currentUserKey, null);
 }
@@ -162,7 +180,7 @@ function setCurrentUser(user) {
 }
 
 function isAdminUser(user = getCurrentUser()) {
-  if (window.SonBackend?.isConfigured()) return verifiedAuthEmail === adminEmail;
+  if (verifiedAuthEmail) return verifiedAuthEmail === adminEmail;
   return Boolean(user?.email && user.email.toLowerCase() === adminEmail);
 }
 
@@ -180,15 +198,29 @@ function protectAdminPage() {
   adminSection.innerHTML = `
     <div class="admin-denied" role="alert">
       <p class="eyebrow">protected admin</p>
-      <h1 class="page-title">manual review is locked.</h1>
-      <p>Only ${adminEmail} can open the admin queue. Redirecting to sign up.</p>
+      <h1 class="page-title">admin only. 😭</h1>
+      <p>You need admin access to view this page. Sign in with your admin account.</p>
       <a class="view-link" href="${routePath("signup/")}">Sign in</a>
     </div>
   `;
 
   window.setTimeout(() => {
     if (!isAdminUser()) window.location.href = routePath("signup/");
-  }, 1200);
+  }, 1500);
+}
+
+function showToast(message) {
+  const existing = document.querySelector(".son-toast");
+  if (existing) existing.remove();
+  const toast = document.createElement("div");
+  toast.className = "son-toast";
+  toast.textContent = message;
+  document.body.append(toast);
+  setTimeout(() => toast.classList.add("is-visible"), 10);
+  setTimeout(() => {
+    toast.classList.remove("is-visible");
+    setTimeout(() => toast.remove(), 400);
+  }, 3200);
 }
 
 async function refreshVerifiedAuthUser() {
@@ -325,9 +357,20 @@ function renderForums() {
       return (b.votes * 3 + b.messages.length) - (a.votes * 3 + a.messages.length) || b.createdAt - a.createdAt;
     });
 
+  const banned = getBanned();
+  const unlocked = getForumUnlocked();
+  const isBanned = user && banned.includes(profileKey(user.handle));
+  const canThread = !isBanned && (isAdminUser() || unlocked.includes(profileKey(user?.handle || "")) || userVotes >= 10);
+
   if (forumGate && forumForm) {
     forumGate.textContent = user
-      ? `${user.handle} has ${userVotes}/10 upvotes needed to start a thread.`
+      ? isBanned
+        ? `${user.handle} is banned from the forums.`
+        : isAdminUser()
+          ? `Admin access — posting unlocked.`
+          : unlocked.includes(profileKey(user.handle))
+            ? `${user.handle} has admin-granted forum access. 😭`
+            : `${user.handle} has ${userVotes}/10 upvotes needed to start a thread.`
       : "Sign up first, then earn 10 total upvotes to start a thread.";
     forumForm.classList.toggle("is-locked", !canThread);
     forumForm.querySelectorAll("input, textarea, button").forEach((field) => {
@@ -829,9 +872,8 @@ if (form) {
     form.reset();
     renderSignup();
     renderAdminQueue();
-    const adminSection = document.querySelector("#admin");
-    if (adminSection) adminSection.scrollIntoView({ behavior: "smooth", block: "start" });
-    else window.location.href = routePath("admin/");
+    showToast("son submitted! 😭 awaiting admin review.");
+    document.querySelector("#feed")?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 }
 
@@ -998,6 +1040,188 @@ if (viewerClose) {
   control.addEventListener("change", () => renderGallery(getPosts()));
 });
 
+function renderAdminLiveFeed() {
+  const list = document.querySelector("#admin-feed-list");
+  if (!list) return;
+  const posts = loadJson(storageKey, []);
+  list.replaceChildren();
+
+  if (!posts.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-state admin-empty";
+    empty.textContent = "No approved sons yet.";
+    list.append(empty);
+    return;
+  }
+
+  posts.forEach((post) => {
+    const card = document.createElement("article");
+    card.className = "admin-live-card";
+
+    const img = document.createElement("img");
+    img.src = post.image;
+    img.alt = post.title;
+
+    const info = document.createElement("div");
+    const title = document.createElement("h3");
+    title.textContent = post.title;
+    const meta = document.createElement("p");
+    meta.textContent = `by ${post.author} · ${post.votes} vote${post.votes === 1 ? "" : "s"}`;
+
+    const actions = document.createElement("div");
+    actions.className = "admin-actions";
+    const del = document.createElement("button");
+    del.className = "ghost-light-button";
+    del.textContent = "Delete";
+    del.addEventListener("click", () => {
+      savePosts(loadJson(storageKey, []).filter((item) => item.id !== post.id));
+      renderAdminLiveFeed();
+      renderPosts();
+      showToast("Son removed from live feed.");
+    });
+    actions.append(del);
+    info.append(title, meta);
+    card.append(img, info, actions);
+    list.append(card);
+  });
+}
+
+function renderAdminForum() {
+  const userList = document.querySelector("#admin-user-list");
+  const threadList = document.querySelector("#admin-thread-list");
+  if (!userList) return;
+
+  const posts = getPosts();
+  const unlocked = getForumUnlocked();
+  const banned = getBanned();
+  const threads = loadJson(forumKey, []);
+  const allAuthors = [...new Set(posts.map((p) => profileKey(p.author)).filter(Boolean))];
+
+  userList.replaceChildren();
+  if (!allAuthors.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-state";
+    empty.textContent = "No users yet.";
+    userList.append(empty);
+  } else {
+    allAuthors.forEach((key) => {
+      const displayAuthor = posts.find((p) => profileKey(p.author) === key)?.author || key;
+      const row = document.createElement("div");
+      row.className = "admin-forum-row";
+
+      const name = document.createElement("span");
+      name.textContent = displayAuthor;
+      const isBanned = banned.includes(key);
+      const isUnlocked = unlocked.includes(key);
+
+      const badge = document.createElement("span");
+      badge.className = `admin-badge ${isBanned ? "badge-banned" : isUnlocked ? "badge-unlocked" : "badge-normal"}`;
+      badge.textContent = isBanned ? "banned" : isUnlocked ? "unlocked" : "normal";
+
+      const actions = document.createElement("div");
+      actions.className = "admin-forum-actions";
+
+      if (!isBanned) {
+        const forumBtn = document.createElement("button");
+        forumBtn.className = isUnlocked ? "ghost-light-button" : "primary-button";
+        forumBtn.textContent = isUnlocked ? "Revoke forum" : "Unlock forum";
+        forumBtn.addEventListener("click", () => {
+          const current = getForumUnlocked();
+          saveForumUnlocked(isUnlocked ? current.filter((k) => k !== key) : [...current, key]);
+          renderAdminForum();
+          renderForums();
+          showToast(isUnlocked ? "Forum access revoked." : "Forum access granted! 😭");
+        });
+        actions.append(forumBtn);
+      }
+
+      const banBtn = document.createElement("button");
+      banBtn.className = isBanned ? "primary-button" : "ghost-light-button";
+      banBtn.textContent = isBanned ? "Unban" : "Ban";
+      banBtn.addEventListener("click", () => {
+        const current = getBanned();
+        saveBanned(isBanned ? current.filter((k) => k !== key) : [...current, key]);
+        renderAdminForum();
+        renderForums();
+        showToast(isBanned ? "User unbanned." : "User banned.");
+      });
+      actions.append(banBtn);
+
+      row.append(name, badge, actions);
+      userList.append(row);
+    });
+  }
+
+  if (!threadList) return;
+  threadList.replaceChildren();
+  if (!threads.length) {
+    const empty = document.createElement("p");
+    empty.className = "empty-state";
+    empty.textContent = "No forum threads yet.";
+    threadList.append(empty);
+    return;
+  }
+  threads.forEach((thread) => {
+    const row = document.createElement("div");
+    row.className = "admin-forum-row";
+    const info = document.createElement("span");
+    info.textContent = `${thread.title} — ${thread.author} · ${thread.votes} votes`;
+    const del = document.createElement("button");
+    del.className = "ghost-light-button";
+    del.textContent = "Delete";
+    del.addEventListener("click", () => {
+      saveThreads(loadJson(forumKey, []).filter((t) => t.id !== thread.id));
+      renderAdminForum();
+      renderForums();
+      showToast("Thread deleted.");
+    });
+    row.append(info, del);
+    threadList.append(row);
+  });
+}
+
+function renderAdminStats() {
+  const panel = document.querySelector("#admin-stats-panel");
+  if (!panel) return;
+  const approved = loadJson(storageKey, []);
+  const pending = getPendingPosts();
+  const threads = loadJson(forumKey, []);
+  const allPosts = getPosts();
+  const totalVotes = allPosts.reduce((sum, p) => sum + p.votes, 0);
+  const uniqueUsers = new Set(allPosts.map((p) => profileKey(p.author))).size;
+
+  panel.innerHTML = `
+    <div class="admin-stats-grid">
+      <div class="stat-card"><span class="stat-num">${approved.length}</span><span class="stat-label">approved sons</span></div>
+      <div class="stat-card"><span class="stat-num">${pending.length}</span><span class="stat-label">pending review</span></div>
+      <div class="stat-card"><span class="stat-num">${totalVotes}</span><span class="stat-label">total votes</span></div>
+      <div class="stat-card"><span class="stat-num">${uniqueUsers}</span><span class="stat-label">unique uploaders</span></div>
+      <div class="stat-card"><span class="stat-num">${threads.length}</span><span class="stat-label">forum threads</span></div>
+      <div class="stat-card"><span class="stat-num">${getForumUnlocked().length}</span><span class="stat-label">forum unlocked</span></div>
+    </div>
+  `;
+}
+
+function initAdminTabs() {
+  const tabs = document.querySelectorAll(".admin-tab-btn");
+  const panels = document.querySelectorAll(".admin-tab-panel");
+  if (!tabs.length) return;
+
+  function switchTab(targetId) {
+    tabs.forEach((t) => t.classList.toggle("is-active", t.dataset.tab === targetId));
+    panels.forEach((p) => p.hidden = p.id !== targetId);
+    if (targetId === "tab-feed") renderAdminLiveFeed();
+    if (targetId === "tab-forum") renderAdminForum();
+    if (targetId === "tab-stats") renderAdminStats();
+  }
+
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => switchTab(tab.dataset.tab));
+  });
+
+  switchTab("tab-queue");
+}
+
 async function boot() {
   await refreshVerifiedAuthUser();
   updateAdminVisibility();
@@ -1005,7 +1229,63 @@ async function boot() {
   renderPosts();
   renderSignup();
   renderForums();
+  initAdminTabs();
 }
+
+const signinForm = document.querySelector("#signin-form");
+if (signinForm) {
+  signinForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const statusEl = document.querySelector("#signin-status");
+    const email = document.querySelector("#signin-email")?.value?.trim() || "";
+    const password = document.querySelector("#signin-password")?.value || "";
+
+    if (statusEl) statusEl.textContent = "Signing in...";
+
+    if (window.SonBackend?.isConfigured()) {
+      const { data, error } = await window.SonBackend.signIn({ email, password });
+      if (error) {
+        if (statusEl) statusEl.textContent = error.message;
+        return;
+      }
+      verifiedAuthEmail = data?.user?.email?.toLowerCase() || "";
+      await refreshVerifiedAuthUser();
+    }
+
+    const user = {
+      handle: normalizeHandle(email.split("@")[0]),
+      email,
+      display: "",
+      passwordSet: true,
+      createdAt: Date.now()
+    };
+
+    const existing = getCurrentUser();
+    if (existing?.email?.toLowerCase() === email.toLowerCase()) {
+      setCurrentUser({ ...existing, email });
+    } else {
+      setCurrentUser(user);
+    }
+
+    if (statusEl) statusEl.textContent = isAdminUser()
+      ? "Admin signed in. Redirecting to admin panel..."
+      : "Signed in! Redirecting...";
+    window.setTimeout(() => {
+      window.location.href = isAdminUser() ? routePath("admin/") : routePath("#submit");
+    }, 500);
+  });
+}
+
+const authTabBtns = document.querySelectorAll(".auth-tab-btn");
+authTabBtns.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const target = btn.dataset.auth;
+    authTabBtns.forEach((b) => b.classList.toggle("is-active", b === btn));
+    document.querySelectorAll(".auth-tab-panel").forEach((p) => {
+      p.hidden = p.id !== target;
+    });
+  });
+});
 
 if (window.SonBackend?.ready) {
   window.SonBackend.ready.finally(boot);
