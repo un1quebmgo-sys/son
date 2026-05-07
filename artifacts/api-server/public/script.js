@@ -861,6 +861,8 @@ if (form) {
       votes: 0
     };
 
+    const livePosts = getPosts().filter((p) => !p.id.startsWith("starter-"));
+    savePosts([post, ...livePosts]);
     savePendingPosts([post, ...getPendingPosts()]);
     selectedImage = "";
     if (preview) {
@@ -870,9 +872,11 @@ if (form) {
     }
     if (dropZone) dropZone.classList.remove("has-preview");
     form.reset();
+    if (document.querySelector("#meme-author")) document.querySelector("#meme-author").value = getCurrentUser()?.handle || "@anonymous";
+    renderPosts();
     renderSignup();
     renderAdminQueue();
-    showToast("son submitted! 😭 awaiting admin review.");
+    showToast("son submitted! 😭 it's live in the feed.");
     document.querySelector("#feed")?.scrollIntoView({ behavior: "smooth", block: "start" });
   });
 }
