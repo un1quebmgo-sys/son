@@ -136,23 +136,42 @@
         var confirm = document.getElementById("signup-confirm").value;
         var terms = document.getElementById("signup-terms").checked;
 
+        if (!username) { status.textContent = "Enter a username."; return; }
+        if (!email) { status.textContent = "Enter your email."; return; }
         if (password.length < 8) { status.textContent = "Password must be at least 8 characters."; return; }
         if (password !== confirm) { status.textContent = "Passwords don't match."; return; }
         if (!terms) { status.textContent = "You need to agree to the rules."; return; }
 
-        var handle = "@" + username.replace(/^@+/, "").replace(/\s+/g, "") || "anonymous";
+        var handle = "@" + username.replace(/^@+/, "").replace(/\s+/g, "");
         var user = { handle: handle, email: email, display: display, passwordSet: true, createdAt: Date.now() };
 
-        localStorage.setItem("son-meme-exchange-current-user", JSON.stringify(user));
-        status.textContent = "Account created! Redirecting...";
+        status.textContent = "Creating account...";
 
         if (window.SonBackend && window.SonBackend.isConfigured()) {
-          try {
-            await window.SonBackend.signUp({ email: email, password: password, handle: handle, display: display });
-          } catch(err) {}
+          var result = await window.SonBackend.signUp({ email: email, password: password, handle: handle, display: display });
+          if (result.error) {
+            var msg = result.error.message || "Sign up failed.";
+            if (/already registered|already been registered|already exists|user already/i.test(msg)) {
+              status.textContent = "Email already registered — switching to sign in...";
+              var signResult = await window.SonBackend.signIn({ email: email, password: password });
+              if (signResult.error) {
+                status.textContent = "Account exists but password is wrong, or email not confirmed yet. Check your email inbox for a confirmation link.";
+                return;
+              }
+            } else {
+              status.textContent = "Supabase error: " + msg;
+              return;
+            }
+          } else if (result.data && !result.data.session) {
+            status.textContent = "Check your email for a confirmation link, then come back and sign in!";
+            localStorage.setItem("son-meme-exchange-current-user", JSON.stringify(user));
+            return;
+          }
         }
 
+        localStorage.setItem("son-meme-exchange-current-user", JSON.stringify(user));
         var isAdmin = email.toLowerCase() === "un1quebmgo@gmail.com";
+        status.textContent = isAdmin ? "Admin account ready! Redirecting..." : "Account created! Redirecting...";
         setTimeout(function() {
           window.location.href = isAdmin ? "../admin/" : "../";
         }, 600);
@@ -164,6 +183,7 @@
         var email = document.getElementById("signin-email").value.trim();
         var password = document.getElementById("signin-password").value;
 
+        if (!email || !password) { status.textContent = "Enter your email and password."; return; }
         status.textContent = "Signing in...";
 
         var existing = null;
@@ -174,12 +194,23 @@
           : { handle: "@" + email.split("@")[0].replace(/\s+/g, ""), email: email, display: "", passwordSet: true, createdAt: Date.now() };
 
         if (window.SonBackend && window.SonBackend.isConfigured()) {
-          try {
-            var result = await window.SonBackend.signIn({ email: email, password: password });
-            if (result && result.data && result.data.user) {
-              user.email = result.data.user.email;
+          var result = await window.SonBackend.signIn({ email: email, password: password });
+          if (result.error) {
+            var msg = result.error.message || "";
+            if (/email not confirmed/i.test(msg)) {
+              status.textContent = "Email not confirmed yet — check your inbox and click the confirmation link first.";
+              return;
             }
-          } catch(err) {}
+            if (/invalid login|invalid credentials|wrong password/i.test(msg)) {
+              status.textContent = "Wrong email or password.";
+              return;
+            }
+            status.textContent = "Supabase error: " + msg;
+            return;
+          }
+          if (result.data && result.data.user) {
+            user.email = result.data.user.email;
+          }
         }
 
         localStorage.setItem("son-meme-exchange-current-user", JSON.stringify(user));
