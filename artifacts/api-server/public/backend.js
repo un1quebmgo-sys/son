@@ -65,6 +65,7 @@
       email,
       password,
       options: {
+        emailRedirectTo: `${window.location.origin}/signup/`,
         data: { handle, display }
       }
     });
@@ -73,6 +74,20 @@
   async function signIn({ email, password }) {
     if (!client) return { data: null, error: null, skipped: true };
     return client.auth.signInWithPassword({ email, password });
+  }
+
+  async function signInWithGoogle() {
+    if (!client) return { data: null, error: null, skipped: true };
+    return client.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/signup/`,
+        queryParams: {
+          access_type: "offline",
+          prompt: "select_account"
+        }
+      }
+    });
   }
 
   async function getUser() {
@@ -88,6 +103,7 @@
     ready: hydrate(),
     signUp,
     signIn,
+    signInWithGoogle,
     getUser
   };
 })();

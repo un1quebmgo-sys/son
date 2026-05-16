@@ -259,6 +259,7 @@ h1 {
 }
 
 .primary-button,
+.secondary-button,
 .ghost-button,
 .filter-button,
 .vote-button {
@@ -279,6 +280,11 @@ h1 {
   background: var(--lime);
 }
 
+.secondary-button {
+  color: var(--ink);
+  background: var(--paper);
+}
+
 .ghost-button {
   color: var(--paper);
   background: rgba(255, 255, 255, 0.05);
@@ -292,6 +298,7 @@ h1 {
 }
 
 .primary-button:hover,
+.secondary-button:hover,
 .ghost-button:hover,
 .filter-button:hover,
 .vote-button:hover {
@@ -463,8 +470,27 @@ h1 {
 }
 
 .signup-page-form .primary-button,
+.signup-page-form .secondary-button,
 .signup-page-form .signup-status {
   grid-column: 1 / -1;
+}
+
+.google-button {
+  border-color: var(--line);
+  width: 100%;
+  margin-bottom: 24px;
+}
+
+.google-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  color: #fff;
+  background: #1a73e8;
+  font-weight: 800;
 }
 
 .terms-check {

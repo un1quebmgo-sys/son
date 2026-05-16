@@ -51,6 +51,7 @@ const signupPassword = document.querySelector("#signup-password");
 const signupConfirm = document.querySelector("#signup-confirm");
 const signupTerms = document.querySelector("#signup-terms");
 const signupStatus = document.querySelector("#signup-status");
+const googleLoginButton = document.querySelector("#google-login-button");
 const forumForm = document.querySelector("#forum-form");
 const forumList = document.querySelector("#forum-list");
 const forumGate = document.querySelector("#forum-gate");
@@ -336,7 +337,6 @@ function renderForums() {
   if (!forumList) return;
   const user = getCurrentUser();
   const userVotes = totalVotesForAuthor(user?.handle);
-  const canThread = userVotes >= 10;
   const topicFilter = forumTopicFilter?.value || "all";
   const threads = loadJson(forumKey, [])
     .map((thread) => ({
@@ -923,37 +923,55 @@ if (signupForm) {
       createdAt: Date.now()
     };
 
-    if (window.SonBackend?.isConfigured()) {
-      signupStatus.textContent = "Creating account...";
-      let { data, error } = await window.SonBackend.signUp({
+    if (!window.SonBackend?.isConfigured()) {
+      signupStatus.textContent = "Supabase auth is not connected. Try again after the backend config loads.";
+      return;
+    }
+
+    let createdAuthUser = null;
+    signupStatus.textContent = "Creating account...";
+    try {
+      const { data, error } = await window.SonBackend.signUp({
         email: user.email,
         password,
         handle: user.handle,
         display: user.display
       });
 
-      if (error && /already|registered|exists/i.test(error.message)) {
-        signupStatus.textContent = "Signing in...";
-        const result = await window.SonBackend.signIn({ email: user.email, password });
-        data = result.data;
-        error = result.error;
-      }
-
-      if (!error && !data?.session) {
-        const result = await window.SonBackend.signIn({ email: user.email, password });
-        if (!result.error) data = result.data;
-      }
-
       if (error) {
         signupStatus.textContent = error.message;
         return;
       }
 
-      verifiedAuthEmail = data?.user?.email?.toLowerCase() || "";
+      if (!data?.user) {
+        signupStatus.textContent = "Supabase did not return a new user. Check your auth settings and try again.";
+        return;
+      }
+
+      createdAuthUser = data.user;
+      verifiedAuthEmail = data.user.email?.toLowerCase() || "";
+      if (!data?.session) {
+        setCurrentUser({
+          ...user,
+          email: data.user.email || user.email,
+          supabaseUserId: data.user.id
+        });
+        updateAdminVisibility();
+        signupStatus.textContent = "Account created. Check your email to confirm it, then sign in.";
+        return;
+      }
+
       await refreshVerifiedAuthUser();
+    } catch (error) {
+      signupStatus.textContent = error.message || "Sign up failed. Try again.";
+      return;
     }
 
-    setCurrentUser(user);
+    setCurrentUser({
+      ...user,
+      email: createdAuthUser?.email || user.email,
+      supabaseUserId: createdAuthUser?.id
+    });
     if (signupPassword) signupPassword.value = "";
     if (signupConfirm) signupConfirm.value = "";
     signupStatus.textContent = isAdminUser(user)
@@ -1255,20 +1273,43 @@ if (signinForm) {
 
     if (statusEl) statusEl.textContent = "Signing in...";
 
-    if (window.SonBackend?.isConfigured()) {
+    if (!window.SonBackend?.isConfigured()) {
+      if (statusEl) statusEl.textContent = "Supabase auth is not connected. Try again after the backend config loads.";
+      return;
+    }
+
+    let authUser = null;
+    try {
       const { data, error } = await window.SonBackend.signIn({ email, password });
-      if (!error) {
-        verifiedAuthEmail = data?.user?.email?.toLowerCase() || "";
-        await refreshVerifiedAuthUser();
+      if (error) {
+        if (statusEl) statusEl.textContent = error.message;
+        return;
       }
+      authUser = data?.user || null;
+      if (!authUser) {
+        if (statusEl) statusEl.textContent = "Supabase did not return a user. Check the account and try again.";
+        return;
+      }
+      verifiedAuthEmail = authUser.email?.toLowerCase() || "";
+      await refreshVerifiedAuthUser();
+    } catch (error) {
+      if (statusEl) statusEl.textContent = error.message || "Sign in failed. Try again.";
+      return;
     }
 
     const existing = getCurrentUser();
-    const user = existing?.email?.toLowerCase() === email.toLowerCase()
+    const signedInEmail = authUser.email || email;
+    const user = existing?.email?.toLowerCase() === signedInEmail.toLowerCase()
       ? { ...existing }
-      : { handle: normalizeHandle(email.split("@")[0]), email, display: "", passwordSet: true, createdAt: Date.now() };
+      : {
+          handle: normalizeHandle(signedInEmail.split("@")[0]),
+          email: signedInEmail,
+          display: authUser.user_metadata?.display || "",
+          passwordSet: true,
+          createdAt: Date.now()
+        };
 
-    setCurrentUser({ ...user, email });
+    setCurrentUser({ ...user, email: signedInEmail, supabaseUserId: authUser.id });
     updateAdminVisibility();
 
     if (statusEl) statusEl.textContent = isAdminUser()
@@ -1280,6 +1321,35 @@ if (signinForm) {
   });
 }
 
+if (googleLoginButton) {
+  googleLoginButton.addEventListener("click", async () => {
+    const label = googleLoginButton.querySelector(".google-label");
+    if (!window.SonBackend?.isConfigured()) {
+      showToast("Google login needs Supabase auth connected.");
+      return;
+    }
+
+    googleLoginButton.disabled = true;
+    googleLoginButton.classList.add("is-loading");
+    if (label) label.textContent = "Opening Google...";
+
+    try {
+      const { data, error } = await window.SonBackend.signInWithGoogle();
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+        return;
+      }
+    } catch (error) {
+      showToast(error.message || "Google sign in failed.");
+    }
+
+    googleLoginButton.disabled = false;
+    googleLoginButton.classList.remove("is-loading");
+    if (label) label.textContent = "Continue with Google";
+  });
+}
+
 const authTabBtns = document.querySelectorAll(".auth-tab-btn");
 authTabBtns.forEach((btn) => {
   btn.addEventListener("click", () => {
@@ -1287,6 +1357,7 @@ authTabBtns.forEach((btn) => {
     authTabBtns.forEach((b) => b.classList.toggle("is-active", b === btn));
     document.querySelectorAll(".auth-tab-panel").forEach((p) => {
       p.hidden = p.id !== target;
+      p.classList.toggle("is-visible", p.id === target);
     });
   });
 });
