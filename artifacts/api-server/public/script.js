@@ -181,15 +181,21 @@ async function refreshVerifiedAuthUser() {
   return authUser;
 }
 
-function applyAuthUser(authUser) {
+function applyAuthUser(authUser, event) {
   if (!authUser?.email) return;
   verifiedAuthEmail = authUser.email.toLowerCase();
   const cur = getCurrentUser() || {};
   const meta = authUser.user_metadata || {};
-  setCurrentUser({ ...cur, id: authUser.id, handle: cur.handle || meta.handle || normalizeHandle(authUser.email.split("@")[0]), display: cur.display || meta.display || "", email: authUser.email });
+  const user = { ...cur, id: authUser.id, handle: cur.handle || meta.handle || normalizeHandle(authUser.email.split("@")[0]), display: cur.display || meta.display || "", email: authUser.email };
+  setCurrentUser(user);
   window.SonBackend.syncNow?.();
   renderPosts();
   renderNotifications();
+  if (event === "SIGNED_IN") {
+    window.setTimeout(() => {
+      window.location.href = isAdminUser(user) ? routePath("admin/") : routePath("../");
+    }, 300);
+  }
 }
 
 function sanitizeText(v, fallback) { return v.trim().replace(/\s+/g, " ") || fallback; }
@@ -1255,8 +1261,8 @@ async function boot() {
 }
 
 if (window.SonBackend?.onAuthStateChange) {
-  window.SonBackend.onAuthStateChange(user => {
-    applyAuthUser(user);
+  window.SonBackend.onAuthStateChange((user, event) => {
+    applyAuthUser(user, event);
     updateAdminVisibility();
     protectAdminPage();
   });

@@ -125,7 +125,6 @@
       provider: "google",
       options: {
         redirectTo: `${window.location.origin}/signup/`,
-        skipBrowserRedirect: true,
         queryParams: {
           access_type: "offline",
           prompt: "select_account"
@@ -151,7 +150,7 @@
 
   function onAuthStateChange(callback) {
     if (!client) return { data: null, error: null, skipped: true };
-    return client.auth.onAuthStateChange((_event, session) => callback(session?.user || null));
+    return client.auth.onAuthStateChange((event, session) => callback(session?.user || null, event));
   }
 
   async function signOut() {
