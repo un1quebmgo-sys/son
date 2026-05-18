@@ -175,8 +175,15 @@ async function refreshVerifiedAuthUser() {
     verifiedAuthEmail = authUser.email.toLowerCase();
     const cur = getCurrentUser() || {};
     const meta = authUser.user_metadata || {};
-    setCurrentUser({ ...cur, id: authUser.id, handle: cur.handle || meta.handle || normalizeHandle(authUser.email.split("@")[0]), display: cur.display || meta.display || "", email: authUser.email });
+    const user = { ...cur, id: authUser.id, handle: cur.handle || meta.handle || normalizeHandle(authUser.email.split("@")[0]), display: cur.display || meta.display || "", email: authUser.email };
+    setCurrentUser(user);
     window.SonBackend.syncNow?.();
+    const isOAuthReturn = window.location.hash.includes("access_token") || window.location.search.includes("code=") || window.location.hash.includes("error_description");
+    if (isOAuthReturn) {
+      window.setTimeout(() => {
+        window.location.href = isAdminUser(user) ? routePath("admin/") : routePath("../");
+      }, 300);
+    }
   }
   return authUser;
 }
@@ -625,6 +632,9 @@ function renderPosts() {
       const vb = card.querySelector(".vote-button"); const vt = vb.querySelector("span"); vt.textContent = post.votes;
       vb.classList.toggle("is-voted", hasUserVoted(post.id)); vb.setAttribute("aria-label", `Upvote ${post.title}`);
       card.querySelector(".card-download").href = post.image;
+      const msgBtn = document.createElement("button"); msgBtn.className = "ghost-light-button"; msgBtn.type = "button"; msgBtn.textContent = "Message."; msgBtn.style.cssText = "font-size:12px;padding:4px 10px";
+      msgBtn.addEventListener("click", () => { if (!getCurrentUser()) { window.location.href = routePath("signup/"); return; } window.location.href = routePath(`inbox/?dm=${encodeURIComponent(post.author.replace(/^@+/, ""))}`); });
+      const dl = card.querySelector(".card-download"); if (dl) dl.parentElement.insertBefore(msgBtn, dl);
       const del = card.querySelector(".admin-delete-son");
       if (del) {
         del.hidden = !isAdminUser();
@@ -927,13 +937,8 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       const fd = new FormData(form);
       const post = { id: `post-${Date.now()}`, title: sanitizeText(fd.get("meme-title"), "Untitled son meme"), author: normalizeHandle(fd.get("meme-author")), credit: "user upload", caption: sanitizeText(fd.get("meme-caption"), "No caption supplied."), image: selectedImage || assetPath("assets/songlasses.png"), createdAt: Date.now(), votes: 0 };
-      if (isAdminUser()) {
-        savePosts([post, ...loadJson(storageKey, [])]);
-        showToast("son is live. 😭");
-      } else {
-        savePendingPosts([post, ...getPendingPosts()]);
-        showToast("son submitted! waiting for review. 😭");
-      }
+      savePosts([post, ...loadJson(storageKey, [])]);
+      showToast("son is live. 😭");
       selectedImage = "";
       const pv = document.querySelector("#image-preview"); if (pv) { pv.removeAttribute("src"); pv.removeAttribute("alt"); pv.hidden = true; }
       if (dz) dz.classList.remove("has-preview"); form.reset(); renderPosts(); renderAdminQueue();
