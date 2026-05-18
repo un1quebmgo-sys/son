@@ -3,55 +3,104 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="Create a coming son. 😭😭😭😭 profile.">
-    <title>Sign up - coming son. 😭😭😭😭</title>
+    <meta name="description" content="Create or manage a coming son profile.">
+    <title>Sign up - coming son.</title>
+    <link rel="icon" href="../assets/logo.webp">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800;900&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../styles.css">
-    <style>
-      .auth-tab-panel { display: none; }
-      .auth-tab-panel.is-visible { display: block; }
-    </style>
+    <link rel="stylesheet" href="../styles.css?v=shared-trades-clean-ui-v6">
   </head>
   <body>
     <header class="site-header">
-      <a class="brand" href="../" aria-label="coming son. 😭😭😭😭 home">
+      <a class="brand" href="../" aria-label="coming son home">
         <span class="brand-mark" aria-hidden="true">
           <img src="../assets/logo.webp" alt="logo" style="width:42px;height:42px;object-fit:cover;border-radius:8px;">
         </span>
-        <span>coming son. 😭😭😭😭</span>
+        <span>coming son.</span>
       </a>
       <nav class="site-nav" aria-label="Primary navigation">
         <a href="../#submit">Submit</a>
-        <a href="../#feed">Feed</a>
+        <a href="../trading/">Trading</a>
+        <a href="../inbox/">Inbox</a>
         <a href="../gallery/">Gallery</a>
         <a href="../forums/">Forums</a>
-        <a href="../dm/">DMs</a>
         <a href="../admin/" hidden>Admin</a>
-        <a href="../#profiles">Profiles</a>
-        <a href="../#rules">Rules</a>
-      </nav>
+        <a href="../search/">Search</a>
+        </nav>
       <a class="join-button" href="../signup/" aria-current="page">
         <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
-        Sign up
+        Sign up <span class="inbox-badge nav-badge" hidden>0</span>
       </a>
     </header>
 
     <main id="top">
       <section class="signup-section signup-page page-section" id="signup" aria-labelledby="signup-title">
         <div class="section-heading">
-          <h1 class="page-title" id="signup-title">account. 😭</h1>
-          <p>Sign up for uploads, forum posts, and voting.</p>
+          <h1 class="page-title" id="signup-title">account</h1>
+          <p>Sign in to upload, trade, message, and manage your profile.</p>
         </div>
 
-        <nav class="auth-tabs" aria-label="Authentication options">
-          <button class="auth-tab-btn is-active" type="button" onclick="switchAuthTab('tab-signup', this)">Sign Up</button>
-          <button class="auth-tab-btn" type="button" onclick="switchAuthTab('tab-signin', this)">Sign In</button>
-        </nav>
+        <div class="account-panel" id="account-panel" hidden>
+          <article class="account-card">
+            <div class="account-summary">
+              <span class="account-avatar profile-avatar" id="account-avatar" aria-hidden="true"></span>
+              <div>
+                <p class="eyebrow">signed in</p>
+                <h2 id="account-handle">@anonymous</h2>
+                <p id="account-email">local profile</p>
+              </div>
+              <button class="ghost-light-button" type="button" id="signout-button">Sign out</button>
+            </div>
+            <form class="signup-form signup-page-form account-form" id="account-form">
+              <label>
+                <span>Display name</span>
+                <input id="account-display" maxlength="32" placeholder="son archivist" autocomplete="name">
+              </label>
+              <div class="pfp-control">
+                <img id="account-pfp-preview" alt="profile picture preview">
+                <div>
+                  <label>
+                    <span>Profile picture</span>
+                    <input id="account-pfp-file" type="file" accept="image/png,image/jpeg,image/gif,image/webp">
+                  </label>
+                  <label>
+                    <span>Image URL</span>
+                    <input id="account-pfp-url" type="url" placeholder="https://example.com/image.png">
+                  </label>
+                </div>
+              </div>
+              <button class="primary-button" type="submit">
+                <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                Save Settings
+              </button>
+              <p class="signup-status" id="account-status">Update your public profile details here.</p>
+            </form>
+          </article>
+          <article class="account-card notifications-card">
+            <div class="account-summary">
+              <div>
+                <p class="eyebrow">inbox</p>
+                <h2>trade inbox. 😭</h2>
+                <p>this is where you can trade. 😭</p>
+              </div>
+            </div>
+            <div class="notification-list" id="notification-list" aria-live="polite"></div>
+          </article>
+        </div>
 
-        <div class="auth-tab-panel is-visible" id="tab-signup">
-          <form class="signup-form signup-page-form" id="su-form" onsubmit="handleSignUp(event)">
+        <div id="auth-panel">
+          <button class="google-button" type="button" id="google-login-button">
+            <img class="google-icon" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Cpath fill='%23FFC107' d='M43.611 20.083H42V20H24v8h11.303C33.654 32.657 29.223 36 24 36c-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z'/%3E%3Cpath fill='%23FF3D00' d='m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z'/%3E%3Cpath fill='%234CAF50' d='M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238C29.211 35.091 26.715 36 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z'/%3E%3Cpath fill='%231976D2' d='M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z'/%3E%3C/svg%3E" alt="">
+            <span class="google-label">Continue with Google</span>
+          </button>
+          <nav class="auth-tabs" aria-label="Authentication options">
+            <button class="auth-tab-btn is-active" type="button" data-auth="tab-signup">Sign Up</button>
+            <button class="auth-tab-btn" type="button" data-auth="tab-signin">Sign In</button>
+          </nav>
+
+        <div class="auth-tab-panel" id="tab-signup">
+          <form class="signup-form signup-page-form" id="signup-form">
             <label>
               <span>Username</span>
               <input id="signup-username" maxlength="24" placeholder="@yourname" autocomplete="username" required>
@@ -74,18 +123,18 @@
             </label>
             <label class="terms-check">
               <input id="signup-terms" type="checkbox" required>
-              <span>I agree to keep uploads safe and follow manual review.</span>
+              <span>i agree to keep uploads safe</span>
             </label>
             <button class="primary-button" type="submit">
               <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
               Create Account
             </button>
-            <p class="signup-status" id="signup-status">Fill in the form to create your account.</p>
+            <p class="signup-status" id="signup-status"></p>
           </form>
         </div>
 
-        <div class="auth-tab-panel" id="tab-signin">
-          <form class="signup-form signup-page-form" id="si-form" onsubmit="handleSignIn(event)">
+        <div class="auth-tab-panel" id="tab-signin" hidden>
+          <form class="signup-form signup-page-form" id="signin-form">
             <label>
               <span>Email</span>
               <input id="signin-email" type="email" maxlength="80" placeholder="you@example.com" autocomplete="email" required>
@@ -98,16 +147,36 @@
               <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
               Sign In
             </button>
+            <button class="ghost-button reset-password-button" type="button" id="reset-password-button">reset password</button>
             <p class="signup-status" id="signin-status">Enter your email and password to sign in.</p>
           </form>
+        </div>
+
+        <div class="auth-tab-panel" id="tab-reset" hidden>
+          <form class="signup-form signup-page-form" id="password-reset-form">
+            <label>
+              <span>new password</span>
+              <input id="reset-new-password" type="password" minlength="8" placeholder="8+ characters" autocomplete="new-password" required>
+            </label>
+            <label>
+              <span>confirm password</span>
+              <input id="reset-confirm-password" type="password" minlength="8" placeholder="repeat password" autocomplete="new-password" required>
+            </label>
+            <button class="primary-button" type="submit">
+              <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+              update password
+            </button>
+            <p class="signup-status" id="password-reset-status">Set your new password here.</p>
+          </form>
+        </div>
         </div>
       </section>
     </main>
 
     <footer class="site-footer">
       <div>
-        <strong>coming son. 😭😭😭😭</strong>
-        <p>Account data is saved locally in this browser and synced to Supabase.</p>
+        <strong>coming son.</strong>
+        <p>son. emojis cry</p>
       </div>
       <nav aria-label="Footer links">
         <a href="https://discord.gg/KBwCmTrRDG" target="_blank" rel="noreferrer">Discord server</a>
@@ -117,96 +186,9 @@
       </nav>
     </footer>
 
-    <script>
-      function switchAuthTab(id, btn) {
-        document.querySelectorAll(".auth-tab-panel").forEach(function(p) {
-          p.classList.toggle("is-visible", p.id === id);
-        });
-        document.querySelectorAll(".auth-tab-btn").forEach(function(b) {
-          b.classList.toggle("is-active", b === btn);
-        });
-      }
-
-      async function handleSignUp(e) {
-        e.preventDefault();
-        var status = document.getElementById("signup-status");
-        var username = document.getElementById("signup-username").value.trim();
-        var email = document.getElementById("signup-email").value.trim();
-        var display = document.getElementById("signup-display").value.trim();
-        var password = document.getElementById("signup-password").value;
-        var confirm = document.getElementById("signup-confirm").value;
-        var terms = document.getElementById("signup-terms").checked;
-
-        if (password.length < 8) { status.textContent = "Password must be at least 8 characters."; return; }
-        if (password !== confirm) { status.textContent = "Passwords don't match."; return; }
-        if (!terms) { status.textContent = "You need to agree to the rules."; return; }
-
-        var handle = "@" + username.replace(/^@+/, "").replace(/\s+/g, "") || "anonymous";
-        var user = { handle: handle, email: email, display: display, passwordSet: true, createdAt: Date.now() };
-
-        localStorage.setItem("son-meme-exchange-current-user", JSON.stringify(user));
-        status.textContent = "Account created! Redirecting...";
-
-        if (window.SonBackend && window.SonBackend.isConfigured()) {
-          try {
-            await window.SonBackend.signUp({ email: email, password: password, handle: handle, display: display });
-          } catch(err) {}
-        }
-
-        var isAdmin = email.toLowerCase() === "un1quebmgo@gmail.com";
-        setTimeout(function() {
-          window.location.href = isAdmin ? "../admin/" : "../";
-        }, 600);
-      }
-
-      async function handleSignIn(e) {
-        e.preventDefault();
-        var status = document.getElementById("signin-status");
-        var email = document.getElementById("signin-email").value.trim();
-        var password = document.getElementById("signin-password").value;
-
-        status.textContent = "Signing in...";
-
-        var existing = null;
-        try { existing = JSON.parse(localStorage.getItem("son-meme-exchange-current-user")); } catch(err) {}
-
-        var user = (existing && existing.email && existing.email.toLowerCase() === email.toLowerCase())
-          ? existing
-          : { handle: "@" + email.split("@")[0].replace(/\s+/g, ""), email: email, display: "", passwordSet: true, createdAt: Date.now() };
-
-        if (window.SonBackend && window.SonBackend.isConfigured()) {
-          var result = await window.SonBackend.signIn({ email: email, password: password });
-          if (result.error) {
-            var msg = result.error.message || "";
-            if (/email not confirmed/i.test(msg)) {
-              status.textContent = "Email not confirmed — check your inbox and click the confirmation link, or disable email confirmation in your Supabase dashboard (Authentication → Email).";
-              return;
-            }
-            if (/invalid login|invalid credentials|invalid email or password/i.test(msg)) {
-              status.textContent = "Wrong email or password.";
-              return;
-            }
-            status.textContent = "Error: " + msg;
-            return;
-          }
-          if (result.data && result.data.user) {
-            user.email = result.data.user.email;
-          }
-        }
-
-        localStorage.setItem("son-meme-exchange-current-user", JSON.stringify(user));
-        var isAdmin = email.toLowerCase() === "un1quebmgo@gmail.com";
-        status.textContent = isAdmin ? "Admin signed in! Redirecting..." : "Signed in! Redirecting...";
-
-        setTimeout(function() {
-          window.location.href = isAdmin ? "../admin/" : "../";
-        }, 500);
-      }
-    </script>
-
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="../config.js"></script>
     <script src="../backend.js"></script>
-    <script src="../script.js"></script>
+    <script src="../script.js?v=shared-trades-clean-ui-v6"></script>
   </body>
 </html>

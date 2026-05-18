@@ -24,7 +24,37 @@ Open the Supabase SQL editor and run `supabase-schema.sql`.
 
 The site stores shared app data in the `app_state` table and uses Supabase Auth for email/password sign up when configured.
 
-## 3. Deploy
+## 3. Google login
+
+In Google Cloud OAuth client settings, add this authorized redirect URI:
+
+```text
+https://qymlnrpdwmfwtqstqnci.supabase.co/auth/v1/callback
+```
+
+Add these authorized JavaScript origins:
+
+```text
+https://son.ceo
+https://www.son.ceo
+```
+
+In Supabase, go to Authentication -> Providers -> Google and paste:
+
+- Client ID: `630582187347-oidf2d3oflac6gdmkrllar3knd359lg3.apps.googleusercontent.com`
+- Client secret: use the secret from the Google JSON file, but do not commit it to the repo.
+
+In Supabase Authentication -> URL Configuration, use:
+
+```text
+Site URL: https://son.ceo
+Redirect URLs:
+https://son.ceo/signup/
+https://www.son.ceo/signup/
+http://localhost:4179/signup/
+```
+
+## 4. Deploy
 
 Upload these static files to GitHub Pages, Netlify, Vercel static hosting, or any normal web host.
 

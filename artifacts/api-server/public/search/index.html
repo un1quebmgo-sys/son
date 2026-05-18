@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Search coming son users and meme profiles.">
+    <title>Search - coming son.</title>
+    <link rel="icon" href="../assets/logo.webp">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@500;600;700;800;900&family=Roboto+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css?v=shared-trades-clean-ui-v6">
+  </head>
+  <body>
+    <header class="site-header">
+      <a class="brand" href="../" aria-label="coming son home">
+        <span class="brand-mark" aria-hidden="true">
+          <img src="../assets/logo.webp" alt="logo" style="width:42px;height:42px;object-fit:cover;border-radius:8px;">
+        </span>
+        <span>coming son.</span>
+      </a>
+      <nav class="site-nav" aria-label="Primary navigation">
+        <a href="../#submit">Submit</a>
+        <a href="../trading/">Trading</a>
+        <a href="../inbox/">Inbox</a>
+        <a href="../gallery/">Gallery</a>
+        <a href="../forums/">Forums</a>
+        <a href="../admin/" hidden>Admin</a>
+        <a href="../search/" aria-current="page">Search</a>
+        </nav>
+      <a class="join-button" href="../signup/">
+        <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Sign up <span class="inbox-badge nav-badge" hidden>0</span>
+      </a>
+    </header>
+
+    <main id="top">
+      <section class="profiles-section search-section page-section" id="search" aria-labelledby="profiles-title">
+        <div class="section-heading profiles-heading">
+          <div>
+            <h1 class="page-title" id="profiles-title">search.</h1>
+            <p>Search users, posts, and trade activity from one place.</p>
+          </div>
+          <label class="profile-search-label">
+            <span>search</span>
+            <input id="profile-search" type="search" placeholder="@username, post title, trade item" autocomplete="off">
+          </label>
+        </div>
+        <article class="profile-detail" id="profile-detail" hidden>
+          <div class="profile-cover">
+            <span class="profile-avatar profile-detail-avatar"></span>
+            <div>
+              <h3 id="profile-detail-name"></h3>
+              <p id="profile-detail-summary"></p>
+              <a class="view-link" id="profile-trade-link" href="../trading/">Trade with this user</a>
+            </div>
+          </div>
+          <div class="profile-stats profile-detail-stats">
+            <span><strong id="profile-detail-count">0</strong> sons</span>
+            <span><strong id="profile-detail-votes">0</strong> votes</span>
+          </div>
+          <div class="profile-detail-gallery" id="profile-detail-gallery"></div>
+        </article>
+        <div class="profiles-grid" id="profiles-grid" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div>
+        <strong>coming son.</strong>
+        <p>son. emojis cry</p>
+      </div>
+      <nav aria-label="Footer links">
+        <a href="https://discord.gg/KBwCmTrRDG" target="_blank" rel="noreferrer">Discord server</a>
+        <a href="../#rules">ToS</a>
+        <a href="../#rules">Privacy policy</a>
+        <a href="https://discord.gg/KBwCmTrRDG" target="_blank" rel="noreferrer">Remove/copyright request</a>
+      </nav>
+    </footer>
+
+    <template id="profile-card-template">
+      <article class="profile-card">
+        <div class="profile-top">
+          <span class="profile-avatar"></span>
+          <div>
+            <h3></h3>
+            <p></p>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <span><strong class="profile-count">0</strong> sons</span>
+          <span><strong class="profile-votes">0</strong> votes</span>
+        </div>
+        <div class="profile-sons"></div>
+      </article>
+    </template>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../config.js"></script>
+    <script src="../backend.js"></script>
+    <script src="../script.js?v=shared-trades-clean-ui-v6"></script>
+  </body>
+</html>

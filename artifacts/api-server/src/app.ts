@@ -33,12 +33,18 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api", router);
-
 const publicDir = path.resolve(__dirname, "../public");
-app.use(express.static(publicDir));
+app.use("/api", router);
+app.use(express.static(publicDir, {
+  setHeaders(res, filePath) {
+    if (/\.(html|js|css)$/i.test(filePath)) {
+      res.setHeader("Cache-Control", "no-store, max-age=0");
+    }
+  },
+}));
 
 app.get("/*splat", (_req, res) => {
+  res.setHeader("Cache-Control", "no-store, max-age=0");
   res.sendFile(path.join(publicDir, "index.html"));
 });
 
