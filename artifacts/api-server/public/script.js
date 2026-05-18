@@ -921,10 +921,16 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       const fd = new FormData(form);
       const post = { id: `post-${Date.now()}`, title: sanitizeText(fd.get("meme-title"), "Untitled son meme"), author: normalizeHandle(fd.get("meme-author")), credit: "user upload", caption: sanitizeText(fd.get("meme-caption"), "No caption supplied."), image: selectedImage || assetPath("assets/songlasses.png"), createdAt: Date.now(), votes: 0 };
-      savePendingPosts([post, ...getPendingPosts()]); selectedImage = "";
+      if (isAdminUser()) {
+        savePosts([post, ...loadJson(storageKey, [])]);
+        showToast("son is live. 😭");
+      } else {
+        savePendingPosts([post, ...getPendingPosts()]);
+        showToast("son submitted! waiting for review. 😭");
+      }
+      selectedImage = "";
       const pv = document.querySelector("#image-preview"); if (pv) { pv.removeAttribute("src"); pv.removeAttribute("alt"); pv.hidden = true; }
-      if (dz) dz.classList.remove("has-preview"); form.reset(); renderAdminQueue();
-      const adm = document.querySelector("#admin"); if (adm) adm.scrollIntoView({ behavior: "smooth", block: "start" }); else window.location.href = routePath("admin/");
+      if (dz) dz.classList.remove("has-preview"); form.reset(); renderPosts(); renderAdminQueue();
     });
   }
 
