@@ -38,7 +38,7 @@ const forumKey = "son-meme-exchange-forums";
 const currentUserKey = "son-meme-exchange-current-user";
 const seedVersionKey = "son-meme-exchange-seed-version";
 const seedVersion = "facebook-profiles-v4";
-let isAdminCached = false;
+const adminEmail = "un1quebmgo@gmail.com";
 const forumUnlockKey = "son-meme-exchange-forum-unlock";
 const bannedKey = "son-meme-exchange-banned";
 
@@ -179,25 +179,9 @@ function setCurrentUser(user) {
   updateAdminVisibility();
 }
 
-function isAdminUser() {
-  return isAdminCached;
-}
-
-async function refreshAdminStatus() {
-  const user = getCurrentUser();
-  const email = verifiedAuthEmail || user?.email || "";
-  if (!email) { isAdminCached = false; return; }
-  try {
-    const res = await fetch("/api/is-admin", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email })
-    });
-    const data = await res.json();
-    isAdminCached = Boolean(data?.admin);
-  } catch {
-    isAdminCached = false;
-  }
+function isAdminUser(user = getCurrentUser()) {
+  if (verifiedAuthEmail) return verifiedAuthEmail === adminEmail;
+  return Boolean(user?.email && user.email.toLowerCase() === adminEmail);
 }
 
 function updateAdminVisibility() {
@@ -240,10 +224,7 @@ function showToast(message) {
 }
 
 async function refreshVerifiedAuthUser() {
-  if (!window.SonBackend?.isConfigured()) {
-    await refreshAdminStatus();
-    return null;
-  }
+  if (!window.SonBackend?.isConfigured()) return null;
   const authUser = await window.SonBackend.getUser?.();
   verifiedAuthEmail = authUser?.email?.toLowerCase() || "";
   if (authUser?.email) {
@@ -256,7 +237,6 @@ async function refreshVerifiedAuthUser() {
       email: authUser.email
     }));
   }
-  await refreshAdminStatus();
   return authUser;
 }
 
@@ -829,25 +809,11 @@ function handleFile(file) {
 
   const reader = new FileReader();
   reader.addEventListener("load", () => {
-    const img = new Image();
-    img.onload = () => {
-      const MAX = 900;
-      const scale = Math.min(1, MAX / Math.max(img.width, img.height));
-      const w = Math.round(img.width * scale);
-      const h = Math.round(img.height * scale);
-      const canvas = document.createElement("canvas");
-      canvas.width = w;
-      canvas.height = h;
-      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
-      selectedImage = canvas.toDataURL("image/jpeg", 0.82);
-      if (preview) {
-        preview.src = selectedImage;
-        preview.alt = "Selected meme preview";
-        preview.hidden = false;
-      }
-      if (dropZone) dropZone.classList.add("has-preview");
-    };
-    img.src = reader.result;
+    selectedImage = reader.result;
+    preview.src = selectedImage;
+    preview.alt = "Selected meme preview";
+    preview.hidden = false;
+    dropZone.classList.add("has-preview");
   });
   reader.readAsDataURL(file);
 }
@@ -895,13 +861,8 @@ if (form) {
     };
 
     const livePosts = getPosts().filter((p) => !p.id.startsWith("starter-"));
-    try {
-      savePosts([post, ...livePosts]);
-      savePendingPosts([post, ...getPendingPosts()]);
-    } catch {
-      showToast("Upload failed — image might be too large. Try a smaller file.");
-      return;
-    }
+    savePosts([post, ...livePosts]);
+    savePendingPosts([post, ...getPendingPosts()]);
     selectedImage = "";
     if (preview) {
       preview.removeAttribute("src");
