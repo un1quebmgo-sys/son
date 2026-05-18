@@ -27,6 +27,7 @@
         <a href="../#feed">Feed</a>
         <a href="../gallery/">Gallery</a>
         <a href="../forums/">Forums</a>
+        <a href="../dm/">DMs</a>
         <a href="../admin/" hidden>Admin</a>
         <a href="../#profiles">Profiles</a>
         <a href="../#rules">Rules</a>
@@ -152,9 +153,9 @@
           } catch(err) {}
         }
 
-        var isAdmin = email.toLowerCase() === "un1quebmgo@gmail.com";
+        var adminRes = await fetch("/api/is-admin", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ email: email }) }).then(function(r){return r.json();}).catch(function(){return {admin:false};});
         setTimeout(function() {
-          window.location.href = isAdmin ? "../admin/" : "../";
+          window.location.href = adminRes.admin ? "../admin/" : "../";
         }, 600);
       }
 
@@ -194,11 +195,11 @@
         }
 
         localStorage.setItem("son-meme-exchange-current-user", JSON.stringify(user));
-        var isAdmin = email.toLowerCase() === "un1quebmgo@gmail.com";
-        status.textContent = isAdmin ? "Admin signed in! Redirecting..." : "Signed in! Redirecting...";
+        var adminRes2 = await fetch("/api/is-admin", { method: "POST", headers: {"Content-Type":"application/json"}, body: JSON.stringify({ email: email }) }).then(function(r){return r.json();}).catch(function(){return {admin:false};});
+        status.textContent = adminRes2.admin ? "Admin signed in! Redirecting..." : "Signed in! Redirecting...";
 
         setTimeout(function() {
-          window.location.href = isAdmin ? "../admin/" : "../";
+          window.location.href = adminRes2.admin ? "../admin/" : "../";
         }, 500);
       }
     </script>
